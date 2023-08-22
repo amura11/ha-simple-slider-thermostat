@@ -1,0 +1,52 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+    "name": "simple-slider-thermostat-devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "remoteUser": "vscode",
+    "postStartCommand": ".devcontainer/init.sh",
+    "forwardPorts": [5000, 8123],
+    "portsAttributes": {
+        "5000": {
+            "label": "Frontend Dev Server",
+            "onAutoForward": "silent"
+        },
+        "8123": {
+            "label": "Home Assistant",
+            "onAutoForward": "silent"
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "bierner.lit-html",
+                "runem.lit-plugin",
+                "davidanson.vscode-markdownlint",
+                "redhat.vscode-yaml",
+                "firefox-devtools.vscode-firefox-debug"
+            ],
+            "settings": {
+                "files.eol": "\n",
+                "files.trimTrailingWhitespace": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "markdown.extension.toc.githubCompatibility": true,
+                "terminal.integrated.profiles.linux": {
+                    "zsh": {
+                        "path": "/usr/bin/zsh"
+                    }
+                },
+                "files.watcherExclude": {
+                    "**/.git/objects/**": true,
+                    "**/.git/subtree-cache/**": true,
+                    "**/node_modules/**": true,
+                    "**/.hg/store/**": true,
+                    "**/.rpt2_cache/**": true
+                }
+            }
+        }
+    }
+}

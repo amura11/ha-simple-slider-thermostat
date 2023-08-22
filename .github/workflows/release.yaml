@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: "Release"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v3.5.3"
+
+      - name: "Build the plugin"
+        shell: "bash"
+        run: |
+          cd "${{ github.workspace }}"
+          npm install
+          npm run build
+
+      - name: "Upload the compiled plugin"
+        uses: "softprops/action-gh-release@v0.1.15"
+        with:
+          files: ${{ github.workspace }}/dist/ha-selector-keypad.js
