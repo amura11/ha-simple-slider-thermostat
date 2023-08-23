@@ -7,6 +7,13 @@ lovelace:
   resources:
     - url: http://127.0.0.1:5000/ha-simple-slider-thermostat.js
       type: module
+  dashboards:
+    test-dashboard:
+      mode: yaml
+      filename: test-dashboard.yaml
+      title: Testing
+      icon: mdi:tools
+      show_in_sidebar: true
 
 input_number:
   temp:

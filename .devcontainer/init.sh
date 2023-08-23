@@ -19,4 +19,9 @@ if [[ ! -f "${PWD}/.ha/configuration.yaml" ]]; then
     ln -s "${PWD}/configuration.yaml" "${PWD}/.ha/configuration.yaml"
 fi
 
+if [[ ! -f "${PWD}/.ha/test-dashboard.yaml" ]]; then
+    ln -s "${PWD}/test-dashboard.yaml" "${PWD}/.ha/test-dashboard.yaml"
+fi
+
+
 hass --config "${PWD}/.ha" --script ensure_config

@@ -9,8 +9,8 @@ console.info(
     'color: black; font-weight: bold; background: rgb(245, 245, 245)',
 );
 
-@customElement("ha-simple-slider-thrmostat")
-export class HaKeypadSelector extends LitElement {
+@customElement("ha-simple-slider-thermostat")
+export class HaSimpleSliderThermostat extends LitElement {
     constructor() {
         super();
     }
@@ -20,11 +20,31 @@ export class HaKeypadSelector extends LitElement {
 
     protected render(): TemplateResult {
         return html`
+            <div class="hasst-container">
+                <div class="hasst-temp-low">Lo</div>
+                <div class="hasst-temp-current">Cur</div>
+                <div class="hasst-temp-high">Hi</div>
+            </div>
         `;
     }
 
     static get styles(): CSSResultGroup {
         return css`
+
+            .hasst-container {
+                display: flex;
+                flex-direction: row;
+            }
         `;
     }
 }
+
+/*
+declare global {
+    interface HTMLElementTagNameMap {
+        "ha-simple-slider-thermostat": HaSimpleSliderThermostat;
+    }
+}
+*/
+
+customElements.define("ha-simple-slider-thermostat", HaSimpleSliderThermostat);
