@@ -5,7 +5,7 @@ logger:
 lovelace:
   mode: yaml
   resources:
-    - url: http://127.0.0.1:5000/ha-simple-slider-thermostat.js
+    - url: http://127.0.0.1:5000/simple-slider-thermostat.js
       type: module
   dashboards:
     test-dashboard:

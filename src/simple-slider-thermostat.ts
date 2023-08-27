@@ -1,6 +1,6 @@
 import { CSSResultGroup, LitElement, TemplateResult, css, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { HomeAssistant } from 'custom-card-helpers';
+import { HomeAssistant, LovelaceCardConfig, handleAction } from 'custom-card-helpers';
 import * as packageData from '../package.json';
 
 console.info(
@@ -9,21 +9,40 @@ console.info(
     'color: black; font-weight: bold; background: rgb(245, 245, 245)',
 );
 
-@customElement("ha-simple-slider-thermostat")
-export class HaSimpleSliderThermostat extends LitElement {
+interface SimpleSliderConfig extends LovelaceCardConfig {
+    entity: string
+}
+
+@customElement("simple-slider-thermostat")
+export class SimpleSliderThermostat extends LitElement {
     constructor() {
         super();
     }
 
     @property()
-    public hass!: HomeAssistant;
+    private _hass?: HomeAssistant;
+
+    @property()
+    private _config?: SimpleSliderConfig;
+
+    public set hass(hass: HomeAssistant) {
+        this._hass = hass;
+    }
+
+    public setConfig(config: SimpleSliderConfig) : void {
+        if(!config){
+            throw "Configuration is invalid";
+        }
+
+        this._config = config;
+    }
 
     protected render(): TemplateResult {
         return html`
             <div class="hasst-container">
                 <div class="hasst-temp-low">Lo</div>
-                <div class="hasst-temp-current">Cur</div>
-                <div class="hasst-temp-high">Hi</div>
+                <div class="hasst-temp-current">Current</div>
+                <div class="hasst-temp-high">high</div>
             </div>
         `;
     }
@@ -39,12 +58,4 @@ export class HaSimpleSliderThermostat extends LitElement {
     }
 }
 
-/*
-declare global {
-    interface HTMLElementTagNameMap {
-        "ha-simple-slider-thermostat": HaSimpleSliderThermostat;
-    }
-}
-*/
-
-customElements.define("ha-simple-slider-thermostat", HaSimpleSliderThermostat);
+//customElements.define("simple-slider-thermostat", SimpleSliderThermostat);

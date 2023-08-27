@@ -1,5 +1,5 @@
 {
-    "name": "ha-simple-slider-thermostat",
+    "name": "simple-slider-thermostat",
     "version": "1.0.0",
     "description": "A simple slider based thermostat card for Home Assistant",
     "main": "index.js",

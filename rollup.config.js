@@ -28,7 +28,7 @@ const plugins = [
 
 export default [
     {
-        input: "src/ha-simple-slider-thermostat.ts",
+        input: "src/simple-slider-thermostat.ts",
         output: {
             dir: "./dist",
             format: "es",
@@ -36,6 +36,7 @@ export default [
         },
         watch: {
             exclude: 'node_modules/**',
+            chokidar: false,
         },
         plugins: [...plugins]
     }
