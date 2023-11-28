@@ -1,0 +1,10 @@
+title: Testing Dashboard
+views:
+    # View tab title.
+  - title: Main
+    cards:
+      - type: custom:simple-slider-thermostat
+        entity: climate.fake_thermostat
+      - type: entities
+        entities:
+          - input_number.temp
