@@ -71,7 +71,7 @@
                 "background": {
                     "activeOnStart": true,
                     "beginsPattern": "^.*Setting up frontend",
-                    "endsPattern": "^.*Starting Home Assistant"
+                    "endsPattern": "^.*\\[asyncio\\].*is serving"
                 }
             }
         },

@@ -1,7 +1,0 @@
-title: Testing Dashboard
-views:
-    # View tab title.
-  - title: Main
-    cards:
-      - type: custom:simple-slider-thermostat
-        entity: input_number.temp

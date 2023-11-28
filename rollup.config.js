@@ -4,6 +4,7 @@ import nodeResolve from "@rollup/plugin-node-resolve";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import serve from "rollup-plugin-serve";
+import css from "rollup-plugin-import-css";
 
 const dev = process.env.ROLLUP_WATCH;
 
@@ -22,7 +23,8 @@ const plugins = [
     commonjs(),
     typescript(),
     json(),
-    terser(),
+    css(),
+    dev && terser(),
     dev && serve(serveOptions)
 ];
 

@@ -19,21 +19,26 @@
     "homepage": "https://github.com/amura11/ha-simple-slider-thermostat#readme",
     "type": "module",
     "devDependencies": {
+        "@mdi/js": "^7.3.67",
         "@rollup/plugin-commonjs": "^25.0.2",
         "@rollup/plugin-json": "^6.0.0",
         "@rollup/plugin-node-resolve": "^15.1.0",
         "@rollup/plugin-terser": "^0.4.3",
         "@rollup/plugin-typescript": "^11.1.2",
         "@types/lodash": "^4.14.195",
+        "fitty": "^2.3.7",
+        "lodash": "^4.17.21",
         "rollup": "^3.26.2",
+        "rollup-plugin-import-css": "^3.3.5",
         "rollup-plugin-serve": "^2.0.2",
+        "tslib": "^2.6.1",
         "typescript": "^5.1.6",
-        "tslib": "^2.6.1"
+        "underscore": "^1.13.6"
     },
     "dependencies": {
         "@material/web": "^1.0.0-pre.12",
         "custom-card-helpers": "^1.9.0",
         "lit": "^2.7.6",
-        "lodash": "^4.17.21"
+        "nouislider": "^15.7.1"
     }
 }

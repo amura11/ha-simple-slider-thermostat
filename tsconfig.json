@@ -12,6 +12,7 @@
         "resolveJsonModule": true,
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
+        "useDefineForClassFields": false
     },
     "include": ["./src/**/*.ts"]
 }
