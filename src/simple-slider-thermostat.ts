@@ -1,5 +1,6 @@
-import { CSSResultGroup, LitElement, PropertyValueMap, TemplateResult, css, html, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { CSSResultGroup, LitElement, PropertyValueMap, TemplateResult, css, html } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { ClimateEntity } from './ha-types';
@@ -7,6 +8,7 @@ import * as packageData from '../package.json';
 import { SliderStyles } from './styles';
 import NoUiSlider, { PipsMode, PipsType, API as SliderInstance, Options as SliderOptions } from 'nouislider';
 import { debounce } from 'lodash';
+import './temperature-view';
 
 console.info(
     `%c  ${packageData.name.toUpperCase()} \n%c Version ${packageData.version} `,
@@ -51,35 +53,36 @@ export class SimpleSliderThermostat extends LitElement {
     constructor() {
         super();
 
-        this._sliderConfig = {
+        this.sliderConfig = {
             margin: 1,
             step: 0.1,
             range: { min: 17.8, max: 28.2 },
             padding: 0.2,
-            start: [this._tempLow, this._tempHigh],
+            start: [this.targetTempLow, this.targetTempHigh],
             pips: { mode: PipsMode.Steps, density: 1, filter: filterPips }
         }
     }
 
     @state()
-    private _tempLow: number = 21.0;
+    private targetTempLow: number = 21.0;
 
     @state()
-    private _tempHigh: number = 23.0;
+    private targetTempHigh: number = 23.0;
 
     @state()
-    private _hass?: HomeAssistant;
+    private hassInstance?: HomeAssistant;
 
     @state()
-    private _config?: SimpleSliderConfig;
+    private config?: SimpleSliderConfig;
 
-    private _sliderElement?: HTMLElement;
-    private _sliderInstance?: SliderInstance;
-    private _sliderConfig!: SliderOptions;
-    private _currentTempElement?: HTMLElement;
+    @query("#slider-control", true)
+    private sliderElement?: HTMLElement;
+
+    private sliderInstance?: SliderInstance;
+    private sliderConfig!: SliderOptions;
 
     public set hass(hass: HomeAssistant) {
-        this._hass = hass;
+        this.hassInstance = hass;
     }
 
     public setConfig(config: SimpleSliderConfig): void {
@@ -87,30 +90,32 @@ export class SimpleSliderThermostat extends LitElement {
             throw "Configuration is invalid";
         }
 
-        this._config = config;
+        this.config = config;
     }
 
     protected get precision(): number {
-        return this._config?.precision ?? 1;
+        return this.config?.precision ?? 1;
     }
 
     protected render(): TemplateResult {
         const thermostatData: ThermostatDataResult = this.getThermostatData();
-        const temperatureUnit: string = this._hass!.config.unit_system.temperature;
+        const temperatureUnit: string = this.hassInstance!.config.unit_system.temperature;
 
         return html`
         <ha-card>
             <div class="container">
                 <div class="display-container">
-                    ${ this.renderTemperatureDisplay(thermostatData.currentTemp!.toFixed(this.precision), temperatureUnit) }
+                    <temperature-display value=${ifDefined(thermostatData.currentTemp)} units=${temperatureUnit} precision=${this.precision}></temperature-display>
                 </div>
                 <div class="target-container">
                     <div class="temp-low">
-                        ${this.renderTemperatureDisplay(this._tempLow.toFixed(this.precision), temperatureUnit)}
+                        <temperature-display value=${ifDefined(this.targetTempLow)} units=${temperatureUnit} precision=${this.precision}></temperature-display>
                     </div>
-                    <div>ICON</div>
+                    <div>
+                        ICON
+                    </div>
                     <div class="temp-low">
-                        ${this.renderTemperatureDisplay(this._tempHigh.toFixed(this.precision), temperatureUnit)}
+                        <temperature-display value=${ifDefined(this.targetTempHigh)} units=${temperatureUnit} precision=${this.precision}></temperature-display>
                     </div>
                 </div>
                 <div class="control-container">
@@ -122,10 +127,10 @@ export class SimpleSliderThermostat extends LitElement {
     }
 
     protected firstUpdated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-        this._sliderElement = this.shadowRoot!.getElementById("slider-control") as HTMLElement;
-        this._sliderInstance = NoUiSlider.create(this._sliderElement, this._sliderConfig);
+        //this.sliderElement = this.shadowRoot!.getElementById("slider-control") as HTMLElement;
+        this.sliderInstance = NoUiSlider.create(this.sliderElement!, this.sliderConfig);
 
-        this._sliderInstance.on("update", (values: (number | string)[]) => this.onSliderUpdate(values));
+        this.sliderInstance.on("update", (values: (number | string)[]) => this.onSliderUpdate(values));
     }
 
     private getThermostatData(): ThermostatDataResult {
@@ -133,12 +138,12 @@ export class SimpleSliderThermostat extends LitElement {
             type: ThermostatDataResultType.Unknown
         };
 
-        if (!this._config || !this._hass) {
+        if (!this.config || !this.hassInstance) {
             toReturn.type = ThermostatDataResultType.NotConfigured;
-        } else if (!this._hass.connected) {
+        } else if (!this.hassInstance.connected) {
             toReturn.type = ThermostatDataResultType.NotConnected;
         } else {
-            var entityState: ClimateEntity | undefined = this._hass.states[this._config!.entity] as ClimateEntity;
+            var entityState: ClimateEntity | undefined = this.hassInstance.states[this.config!.entity] as ClimateEntity;
 
             if (entityState) {
                 toReturn.type = ThermostatDataResultType.Success;
@@ -153,24 +158,13 @@ export class SimpleSliderThermostat extends LitElement {
         return toReturn;
     }
 
-    private renderTemperatureDisplay(temperatureValue: string, temperatureUnit: string) {
-        return html`
-        <svg class="temperature-display" viewBox="0 0 40 20">
-            <text x="50%" dx="1" y="60%" text-anchor="middle" style="font-size: 13px">
-                ${temperatureValue}
-                <tspan dx="-3" dy="-6.5" style="font-size: 4px">${temperatureUnit}</tspan>
-            </text>
-        </svg>
-        `
-    }
-
     private async onSliderUpdate(values: (number | string)[]): Promise<void> {
         const newTempLow = parseFloat(values[0] as string);
         const newTempHigh = parseFloat(values[1] as string);
 
-        if (newTempLow != this._tempLow || newTempHigh != this._tempHigh) {
-            this._tempLow = newTempLow;
-            this._tempHigh = newTempHigh;
+        if (newTempLow != this.targetTempLow || newTempHigh != this.targetTempHigh) {
+            this.targetTempLow = newTempLow;
+            this.targetTempHigh = newTempHigh;
 
             this.updateHomeAssistantEntity();
         }
@@ -178,14 +172,14 @@ export class SimpleSliderThermostat extends LitElement {
 
     private updateHomeAssistantEntity = debounce(async () => {
         var data = {
-            entity_id: this._config!.entity,
-            target_temp_low: this._tempLow,
-            target_temp_high: this._tempHigh
+            entity_id: this.config!.entity,
+            target_temp_low: this.targetTempLow,
+            target_temp_high: this.targetTempHigh
         };
 
         console.log("Update HA entity");
 
-        await this._hass!.callService("climate", "set_temperature", data);
+        await this.hassInstance!.callService("climate", "set_temperature", data);
 
         await new Promise((resolve) => {
             setTimeout(resolve, 2000);
@@ -196,6 +190,7 @@ export class SimpleSliderThermostat extends LitElement {
     static get styles(): CSSResultGroup {
         return [SliderStyles, css`
             :host {
+                --text-color: var(--hast-text-color, var(--primary-text-color));
 
                 --slider-background: var(--hast-slider-color, var(--paper-slider-container-color, #d3d3d3));
                 --slider-height: var(--hast-slider-height, 4px);
@@ -239,10 +234,6 @@ export class SimpleSliderThermostat extends LitElement {
             .temperature-display {
                 width: 100%;
                 height: 100%;
-            }
-
-            .temperature-display text {
-                fill: var(--primary-text-color);
             }
 
             .temp-current {
